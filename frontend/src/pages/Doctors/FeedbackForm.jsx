@@ -3,7 +3,7 @@ import { AiFillStar } from "react-icons/ai";
 import { useParams } from "react-router-dom";
 import { BASE_URL, token } from "./../../config";
 import { toast } from "react-toastify";
-import HashLoader from "react-spinners/HashLoader"; // ✅ FIXED
+import HashLoader from "react-spinners/HashLoader"; 
 
 const FeedbackForm = () => {
   const [rating, setRating] = useState(0);
@@ -11,7 +11,7 @@ const FeedbackForm = () => {
   const [reviewText, setReviewText] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { id } = useParams(); // ✅ FIXED
+  const { id } = useParams(); 
 
   const handleSubmitReview = async (e) => {
     e.preventDefault();
@@ -29,7 +29,7 @@ const FeedbackForm = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ rating, reviewText }), // ✅ FIXED
+        body: JSON.stringify({ rating, reviewText }), 
       });
 
       const result = await res.json();
