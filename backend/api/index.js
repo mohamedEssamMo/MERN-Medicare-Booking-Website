@@ -14,34 +14,44 @@ import bookingRoute from "../Routes/booking.js";
 dotenv.config();
 const app = express();
 
+// MongoDB Connection for Vercel
+mongoose.set("strictQuery", false);
+let isConnected = false;
+
+async function connectDB() {
+  if (isConnected) return;
+
+  try {
+    const db = await mongoose.connect(process.env.MONGO_URI);
+    isConnected = db.connections[0].readyState;
+    console.log("MongoDB connected");
+  } catch (err) {
+    console.error("MongoDB connection error:", err);
+  }
+}
+
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({ origin: true }));
 
+// Always connect to DB per request
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
+
 // Routes
 app.get("/", (req, res) => {
   res.send("API is running....");
 });
+
 app.use("/api/v1/auth", authRoute);
 app.use("/api/v1/users", userRoute);
 app.use("/api/v1/doctors", doctorRoute);
 app.use("/api/v1/reviews", reviewRoute);
 app.use("/api/v1/bookings", bookingRoute);
 
-// MongoDB connection
-mongoose.set("strictQuery", false);
-const connectDB = async () => {
-  try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log("MongoDB connected successfully");
-  } catch (error) {
-    console.error("Error connecting to MongoDB:", error);
-  }
-};
-connectDB();
-
-// Export as serverless function
+// Export serverless function
 export const handler = serverless(app);
-
 export default app;
